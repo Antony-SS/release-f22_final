@@ -29,11 +29,16 @@ namespace QuackFun {
 template <typename T>
 T sum(stack<T>& s)
 {
-
     // Your code here
-    return T(); // stub return value (0 for primitive types). Change this!
-                // Note: T() is the default value for objects, and 0 for
-                // primitive types
+    if (s.empty()) {
+        return T();
+    } else {
+        T toReplace = s.top();
+        s.pop();
+        T summation =  toReplace + sum(s);
+        s.emplace(toReplace);
+        return summation;
+    }
 }
 
 /**
