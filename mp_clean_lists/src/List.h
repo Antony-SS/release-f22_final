@@ -201,7 +201,8 @@ class List {
 
     // Iterator constructor
     template <class Iter>
-    List(const Iter& start, const Iter& end);
+    List(const Iter& start, const Iter& end); // will use this for split
+    List(ListNode* head, ListNode* tail, int length); // will use this for split
 
   private:
     /*

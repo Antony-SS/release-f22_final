@@ -8,6 +8,14 @@ List<T>::List() {
   // @TODO: graded in MP3.1
     head_ = NULL;
     tail_ = NULL;
+    length_ = 0;
+}
+
+template <class T>
+List<T>::List(ListNode* head, ListNode* tail, int length) // this is a problem
+    : head_(head), tail_(tail), length_(length)
+{
+    
 }
 
 /**
@@ -17,7 +25,7 @@ List<T>::List() {
 template <typename T>
 typename List<T>::ListIterator List<T>::begin() const {
   // @TODO: graded in MP3.1
-  return List<T>::ListIterator(NULL);
+  return List<T>::ListIterator(head_); // CHANGED THIS FROM NULL TO HEAD
 }
 
 /**
@@ -26,7 +34,7 @@ typename List<T>::ListIterator List<T>::begin() const {
 template <typename T>
 typename List<T>::ListIterator List<T>::end() const {
   // @TODO: graded in MP3.1
-  return List<T>::ListIterator(NULL);
+  return List<T>::ListIterator(NULL); // I think this is actually right
 }
 
 
@@ -37,6 +45,18 @@ typename List<T>::ListIterator List<T>::end() const {
 template <typename T>
 void List<T>::_destroy() {
   /// @todo Graded in MP3.1
+  if (length_ != 0) {
+    ListNode* curr = head_;
+    while (curr != NULL) {
+      ListNode* tmpNext = curr->next;
+      delete curr;
+      curr = tmpNext;
+    }
+    
+    head_ = NULL;
+    tail_ = NULL;
+    length_ = 0;
+  }
 }
 
 /**
@@ -45,23 +65,33 @@ void List<T>::_destroy() {
  *
  * @param ndata The data to be inserted.
  */
+
+// DONE (95% certainty)
 template <typename T>
-void List<T>::insertFront(T const & ndata) {
+void List<T>::insertFront(T const & ndata) { 
   /// @todo Graded in MP3.1
   ListNode * newNode = new ListNode(ndata);
+
+  // I am sure about these two
   newNode -> next = head_;
   newNode -> prev = NULL;
-  
-  if (head_ != NULL) {
+
+  // Case 1 : First node in list(both head and tail should pt to A)  Null | A
+  // Case 2: Anything other than first node:  A | B <-> A
+
+  // handles Case 2, in which case the the now second node, still pnted to by head, needs to get a previous pointer to new node.
+  if (head_ != NULL) { 
     head_ -> prev = newNode;
   }
+
+  head_ = newNode; // in whatever case we need to assign head to this node
+
+  // only time tail should be updated at insert front is when the new node is the first one.
   if (tail_ == NULL) {
     tail_ = newNode;
   }
-  
 
   length_++;
-
 }
 
 /**
@@ -70,9 +100,33 @@ void List<T>::insertFront(T const & ndata) {
  *
  * @param ndata The data to be inserted.
  */
+
+// Done (95% certainty)
 template <typename T>
 void List<T>::insertBack(const T & ndata) {
   /// @todo Graded in MP3.1
+
+  ListNode * newNode = new ListNode(ndata);
+
+  // sure about these two
+  newNode->next = NULL;
+  newNode->prev = tail_;
+
+  // Case 1 : First node in list(both head and tail should pt to A)  Null | A
+  // Case 2: Anything other than first node:  A | A <-> B
+
+  if (tail_ != NULL) {  // means added node isnt' first one, have to update current tail's next ptr
+    tail_ -> next = newNode;
+  } 
+
+  tail_ = newNode; // whatever case, tail has to become newNode
+
+  if (head_ == NULL) { // if inserted node is first one (head_ is null) then head & tail should pt to new Node
+    head_ = newNode;
+  }
+
+  length_++;
+
 }
 
 /**
@@ -94,18 +148,26 @@ void List<T>::insertBack(const T & ndata) {
 template <typename T>
 typename List<T>::ListNode * List<T>::split(ListNode * start, int splitPoint) {
   /// @todo Graded in MP3.1
-  ListNode * curr = start;
 
-  for (int i = 0; i < splitPoint || curr != NULL; i++) {
+  if(splitPoint == 0){ // in this case the the new list starts at the current start point
+    return start;
+  }
+
+  ListNode* curr = start;
+  for(int i = 0; i < splitPoint; ++i){ 
+    // temp = second;
+    // second = second->next;
     curr = curr->next;
   }
 
   if (curr != NULL) {
-      curr->prev->next = NULL;
-      curr->prev = NULL;
+    tail_ = curr->prev; // I think I need this
+    curr->prev->next = NULL;
+    curr->prev = NULL;
   }
-
-  return NULL;
+  
+  // think about updating head, tail, and length or current list . . . not sure if we should . . .
+  return curr;
 }
 
 /**
@@ -121,6 +183,46 @@ typename List<T>::ListNode * List<T>::split(ListNode * start, int splitPoint) {
 template <typename T>
 void List<T>::tripleRotate() {
   // @todo Graded in MP3.1
+
+  // handle edge case with less than 3 nodes
+
+  if (length_ < 3) {
+    return;
+  }
+
+  ListNode* curr = head_;
+
+  for (int i = 0; i < length_ - 2; i += 3) { // think the range here works
+    std::cout << i << std::endl;
+    ListNode* index0 = curr;
+    ListNode* index1 = curr->next;
+    ListNode* index2 = curr->next->next;
+
+    // first we need to change index 0s previous pointer, but keep it in a tmp var b/c we will need it for index 2; previous;
+    ListNode* index0tmpprevious = index0->prev;
+    index0->prev = index2;
+    index1->prev = index0tmpprevious;
+    ListNode* index2tmpnext = index2->next;
+    index2->next = index0;
+    index0->next = index2tmpnext;
+    if (i != 0) { // means we are not dealing with a head so we can access prev-> next. . . 
+      index0->prev->next = index2;
+    } else if (i == 0) {
+      head_ = index2;
+    }
+
+    index1->next = index2tmpnext; // used tmp2prevnext!, don't use again
+
+    if (i + 3 != length_ ) { // not dealing with a tail node . . . . 
+      index2tmpnext->prev = index1;
+    } else { // dealing with a tail . . . 
+      tail_ = index1;
+    }
+    return;
+  }
+
+
+
 }
 
 

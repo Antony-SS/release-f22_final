@@ -25,6 +25,7 @@ bool List<T>::empty() const {
 template <class T>
 void List<T>::_copy(List<T> const& other) {
     // set up the default, empty list
+    // THIS should be ok b/c we already called destroy . . . 
     head_ = NULL;
     tail_ = NULL;
     length_ = 0;
@@ -143,18 +144,24 @@ ostream& operator<<(ostream& os, const List<T>& list) {
 
 // ListNode constructors
 template <class T>
-List<T>::ListNode::ListNode() : next(NULL), prev(NULL), data(T())
+List<T>::ListNode::ListNode() : next(NULL), prev(NULL), data(T()) // NO EDITS NEEDED
 { /* nothing */ }
 
 template <class T>
-List<T>::ListNode::ListNode(const T& ndata) : next(NULL), prev(NULL), data(ndata)
+List<T>::ListNode::ListNode(const T& ndata) : next(NULL), prev(NULL), data(ndata) // NO EDITS NEEDED
 { /* nothing */ }
 
 template <class T>
 template <class Iter>
-List<T>::List(const Iter& begin_iterator, const Iter& end_iterator)
+List<T>::List(const Iter& begin_iterator, const Iter& end_iterator) // IF I WANT TO USE, I MUST FIX
     : head_(NULL), tail_(NULL), length_(0)
 {
-    for (Iter i = begin_iterator; i != end_iterator; ++i)
+    int j = 0;
+    for (Iter i = begin_iterator; i != end_iterator; ++i) {
         insertBack(*i);
+        j++;
+    }
+
+    length_ = (j);
+
 }
