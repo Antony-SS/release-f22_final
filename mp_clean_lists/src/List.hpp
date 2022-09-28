@@ -192,36 +192,50 @@ void List<T>::tripleRotate() {
 
   ListNode* curr = head_;
 
-  for (int i = 0; i < length_ - 2; i += 3) { // think the range here works
-    std::cout << i << std::endl;
+  // make sure that this rounds off right
+  int iterations = length_ / 3;
+
+
+  std::cout << "Rounded Iterations: " << iterations << std::endl;
+  for (int i = 0; i < iterations; ++i) { // think the range here works
+    std::cout << "On iternation: " << i << std::endl;
     ListNode* index0 = curr;
     ListNode* index1 = curr->next;
     ListNode* index2 = curr->next->next;
 
-    // first we need to change index 0s previous pointer, but keep it in a tmp var b/c we will need it for index 2; previous;
+    curr = index2->next;
+
+    // std::cout << "SegFault?: 1" << std::endl;
+
+    // First Im gonna deal with index 0, which has to rotate to index 2 . . . 
     ListNode* index0tmpprevious = index0->prev;
+    index1->prev = index0->prev;
+    index0->next = index2->next;
     index0->prev = index2;
-    index1->prev = index0tmpprevious;
-    ListNode* index2tmpnext = index2->next;
     index2->next = index0;
-    index0->next = index2tmpnext;
+
+    // std::cout << "SegFault?: 2" << std::endl;
+
+    if (3*(i+1) == length_ ) { // dealing with a tail . . . . 
+      tail_ = index0;
+    } else { // not dealing with tail so we can access shit . . . 
+      index0->next->prev = index0;
+    }
+
+    // std::cout << "SegFault?: 3" << std::endl;
+    
     if (i != 0) { // means we are not dealing with a head so we can access prev-> next. . . 
-      index0->prev->next = index2;
+      index1->prev->next = index1;
     } else if (i == 0) {
-      head_ = index2;
+      head_ = index1;
     }
 
-    index1->next = index2tmpnext; // used tmp2prevnext!, don't use again
+  
 
-    if (i + 3 != length_ ) { // not dealing with a tail node . . . . 
-      index2tmpnext->prev = index1;
-    } else { // dealing with a tail . . . 
-      tail_ = index1;
-    }
-    return;
   }
 
 
+  return;
 
 }
 
@@ -248,6 +262,65 @@ void List<T>::reverse() {
 template <typename T>
 void List<T>::reverse(ListNode *& startPoint, ListNode *& endPoint) {
   /// @todo Graded in MP3.2
+  if (startPoint == endPoint) {
+    return;
+  }
+
+  // std::cout << "Segfault?: 1" << std::endl;
+
+  ListNode* curr = startPoint;
+  
+  // storing these temps for end when I will have to do some assinging, even if these are null, it is ok (would indicate that we are dealing with a head/tail)
+  ListNode* startPtprevtmp = startPoint->prev;
+  ListNode* endPtnexttmp = endPoint->next;
+
+  // int i = 0;
+  while (curr != endPoint) {
+    // std::cout << "Iteration: " << i << std::endl;
+    ListNode* nexttmp = curr->next;
+    curr->next = curr->prev;
+    curr->prev = nexttmp;
+
+    curr = nexttmp;
+    // i++;
+  }
+
+  // std::cout << "Segfault?: 2" << std::endl;
+  
+  // repeat one more time for endpoint . . . 
+  ListNode* nexttmp = curr->next;
+  curr->next = curr->prev;
+  curr->prev = nexttmp;
+
+  // now we do deal with ends and edge cases
+
+  // std::cout << "Segfault?: 3" << std::endl;
+  ListNode* startPointtmp = startPoint;
+  startPoint = endPoint;
+  endPoint = startPointtmp;
+
+  endPoint->next = endPtnexttmp;
+  startPoint->prev = startPtprevtmp;
+
+  if (startPtprevtmp == NULL) { // dealing with a head
+    head_ = startPoint; // assign head to new start point
+  } else {
+    // std::cout << "Entering to update last item b/c we are not dealing with tail" << std::endl;
+    startPtprevtmp->next = startPoint;
+  }
+
+  // std::cout << "Segfault?: 4" << std::endl;
+
+  if (endPtnexttmp == NULL) { // dealing with tail
+    tail_ = endPoint;
+  } else {
+    // std::cout << "Entering to update last item b/c we are not dealing with tail" << std::endl;
+    endPtnexttmp->prev = endPoint;
+  }
+
+  // std::cout << "Segfault?: 5" << std::endl;
+
+  return;
 }
 
 /**
@@ -259,6 +332,38 @@ void List<T>::reverse(ListNode *& startPoint, ListNode *& endPoint) {
 template <typename T>
 void List<T>::reverseNth(int n) {
   /// @todo Graded in MP3.2
+
+  if (n > length_) {
+    reverse();
+    return;
+  } else if (n == 0 || n == 1) {
+    return;
+  }
+
+  int iterations = length_ / n;
+  bool even = (length_ % n == 0);
+
+  ListNode* startPt = head_;
+  ListNode* endPt = head_;
+
+  for (int i = 0; i < iterations; ++i) {
+    // std::cout << "iteration: " << i << std::endl;
+    for (int j = 0; j < n - 1; ++j) { 
+      endPt = endPt->next;
+      // std::cout << "J at index: " << j << std::endl;
+    }
+    // std::cout << "Calling reverse on " << startPt->data << " and " << endPt->data << std::endl;
+    reverse(startPt, endPt);
+    startPt = endPt->next;
+    endPt = startPt;
+  }
+
+  if (!even) {
+    // std::cout << "Entering not even b/c n division not even" << std::endl;
+    reverse(startPt, tail_);
+  }
+
+  return;
 }
 
 
@@ -297,9 +402,55 @@ void List<T>::mergeWith(List<T> & otherList) {
  * @param second The starting node of the second sequence.
  * @return The starting node of the resulting, sorted sequence.
  */
+
+ // pulling this code from a leetcode problem that I wrote a few days ago . . .
 template <typename T>
 typename List<T>::ListNode * List<T>::merge(ListNode * first, ListNode* second) {
   /// @todo Graded in MP3.2
+          if (first == nullptr && second == nullptr) {
+            return nullptr;
+        } else if (first == nullptr) {
+            return second;
+        } else if (second == nullptr) {
+            return first;
+        }
+        
+        ListNode* current1 = first;
+        ListNode* previous1 = nullptr;
+        ListNode* current2 = second;
+        
+        if ((current2->data) < (current1->data)) {
+            ListNode* tmp = current1;
+            current1 = current2;
+            current2 = tmp;
+            tmp = first;
+            first = second;
+            second = tmp;
+            previous1 = current1;
+            current1 = current1 -> next;
+        } else {
+            previous1 = current1;
+            current1 = current1 -> next;
+        }
+         
+        while (current1 != nullptr && current2 != nullptr) {
+            if (current2 -> data < current1 -> data) {
+                ListNode* tmp = current2 -> next;
+                previous1 -> next = current2;
+                current2 -> next = current1;
+                previous1 = current2;
+                // will get us back to the right value in the second chain
+                current2 = tmp;
+            } else {
+                previous1 = current1;
+                current1 = current1 -> next;
+            }
+        }
+        if (current1 == nullptr) {
+            previous1 -> next = current2;
+        }
+        return first;
+
   return NULL;
 }
 
@@ -317,5 +468,21 @@ typename List<T>::ListNode * List<T>::merge(ListNode * first, ListNode* second) 
 template <typename T>
 typename List<T>::ListNode* List<T>::mergesort(ListNode * start, int chainLength) {
   /// @todo Graded in MP3.2
-  return NULL;
+  if (chainLength == 0 || chainLength == 1) {
+    return start;
+  } else {
+    int half = chainLength / 2; // gonna have to split list
+    ListNode* leftSide = start;
+    ListNode* rightSide = split(start, half);
+
+    // recursive calls
+    ListNode* leftsorted;
+    ListNode* rightsorted;
+    
+    leftsorted = mergesort(leftSide, half);
+    rightsorted = mergesort(rightSide, chainLength - half);
+
+    // now have two sorted lists that we can merge using my earlier function . . . .
+    return merge(leftsorted, rightsorted);
+  }
 }

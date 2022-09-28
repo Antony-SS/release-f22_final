@@ -24,7 +24,7 @@ class PreorderTraversal : public TreeTraversal<T> {
         PreorderTraversal(typename BinaryTree<T>::Node* root)
             : root(root)
         { 
-            stack.push(root); 
+            stack.push(root);
         }
 
         /**

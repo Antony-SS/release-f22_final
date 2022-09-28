@@ -5,6 +5,7 @@
  */
 #include "InorderTraversal.h"
 #include <iostream>
+#include <vector>
 
 /**
  * @return The height of the binary tree. Recall that the height of a binary
@@ -79,6 +80,23 @@ void BinaryTree<T>::printLeftToRight(const Node* subRoot) const
 void BinaryTree<T>::mirror()
 {
     //your code here
+    mirror(root);
+
+}
+
+    template<typename T>
+void BinaryTree<T>::mirror(Node* subRoot) {
+    if (subRoot == NULL) {
+        return;
+    } else {
+    
+        Node* lefttmp = subRoot->left;
+        subRoot->left = subRoot->right;
+        subRoot->right = lefttmp;
+        mirror(subRoot->right);
+        mirror(subRoot->left);
+
+    }
 }
 
 
@@ -92,7 +110,16 @@ template <typename T>
 bool BinaryTree<T>::isOrderedIterative() const
 {
     // your code here
-    return false;
+    
+    InorderTraversal<T> iot(this->root);
+    T max = (iot.peek())->elem;
+    for (typename TreeTraversal<T>::Iterator it = iot.begin(); it != iot.end(); ++it) {
+        if ((*it)->elem < max) {
+            return false;
+        }
+        max = (*it)->elem;
+    }
+    return true;
 }
 
 /**
@@ -105,6 +132,29 @@ template <typename T>
 bool BinaryTree<T>::isOrderedRecursive() const
 {
     // your code here
-    return false;
+    InorderTraversal<T> iot(this->root);
+    std::vector<T> elements;
+
+    T max = iot.peek()->elem;
+
+    isOrderedRecursive(root, elements);
+
+    for (unsigned i = 0; i < elements.size(); ++i) {
+        if (elements.at(i) < max) {
+            return false;
+        } else {
+            max = elements.at(i);
+        }
+    }
+    return true;
 }
 
+template<typename T>
+void BinaryTree<T>::isOrderedRecursive(Node* subRoot, std::vector<T>& elements) const
+{
+    if(subRoot != NULL){
+      isOrderedRecursive(subRoot->left, elements);
+      elements.push_back(subRoot->elem);
+      isOrderedRecursive(subRoot->right, elements);
+    }
+}

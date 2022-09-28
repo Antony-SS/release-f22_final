@@ -15,6 +15,28 @@
 using namespace cs225;
 
 
+TEST_CASE("List::reversenums", "[weight=5][part=2]") {
+
+
+  
+  List<int> list;
+
+  for (int i = 1; i <= 5; i++)
+      list.insertBack(i);
+
+  list.reverse();
+
+  stringstream s;
+
+  std::cout << "Testing segfault" << std::endl;
+
+  list.print(s);
+
+  std::cout << s.str() << std::endl;
+
+  REQUIRE("< 5 4 3 2 1 >" == s.str());
+}
+
 TEST_CASE("List::reverse", "[weight=5][part=2]") {
   PNG in;        in.readFromFile("../tests/alma.png");
   PNG expected;  expected.readFromFile("../tests/expected-reverse.png");
@@ -25,8 +47,28 @@ TEST_CASE("List::reverse", "[weight=5][part=2]") {
   out.writeToFile("actual-reverse.png");
   INFO("Output image `out` saved as actual-reverse.png");
 
-  REQUIRE( out == expected );
+  REQUIRE(out == expected);
 }
+
+TEST_CASE("List::reverseNthnums", "[weight=5][part=2]") {
+  
+  List<int> list;
+
+  for (int i = 1; i <= 5; i++)
+      list.insertBack(i);
+
+  list.reverseNth(3);
+
+  stringstream s;
+
+  list.print(s);
+
+  std::cout << s.str() << std::endl;
+
+  REQUIRE("< 3 2 1 5 4 >" == s.str());
+}
+
+
 
 TEST_CASE("List::reverseNth #1", "[weight=5][part=2]") {
   PNG in;        in.readFromFile("../tests/alma.png");
