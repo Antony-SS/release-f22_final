@@ -7,6 +7,10 @@
 #include "cs225/HSLAPixel.h"
 #include "cs225/PNG.h"
 #include "../Point.h"
+#include <stack>
+#include <queue>
+#include <map>
+#include <vector>
 
 using namespace cs225;
 
@@ -29,6 +33,7 @@ public:
   class Iterator : std::iterator<std::forward_iterator_tag, Point> {
   public:
     Iterator();
+    Iterator(ImageTraversal* traversal, Point& startPt, const PNG* png, double& tolerance);
 
     Iterator & operator++();
     Point operator*();
@@ -40,7 +45,11 @@ public:
   private:
     /** @todo [Part 1] */
     /** add private members here if neccesary*/
-
+      Point currentPt_;
+      Point startPt_;
+      ImageTraversal* traversal_;
+      const PNG* png_;
+      double tolerance_;
   };
 
   /**
@@ -75,6 +84,10 @@ public:
    * Virtual function. Derived class need to implement this
    */
   virtual bool empty() const = 0;
+
+  virtual bool visited(int x, int y) const = 0;
+
+  virtual void setVisited(int x, int y) = 0;
 
 private:
   static double calculateDelta(const HSLAPixel & p1, const HSLAPixel & p2);  

@@ -21,8 +21,29 @@
  * @param tolerance If the current point is too different (difference larger than tolerance) with the start point,
  * it will not be included in this DFS
  */
-DFS::DFS(const PNG & png, const Point & start, double tolerance) {  
+DFS::DFS(const PNG & png, const Point & start, double tolerance): png_(png) {  
   /** @todo [Part 1] */
+  tolerance_ = tolerance;
+  startPt = start;
+  toVisit.push(startPt);
+
+  // leave current point uninitialized?
+
+  // I think a map actually may be more effective but Im not sure if we are allowed to use
+  // going to use vector over array b/c I don't have to deal with memory
+  int height = png.height();
+  int width = png.width();
+
+  // resize seen vector into size of image and intialize all members to 0
+  // CHECK THIS IF GETTING WEIRD SHIT
+  // seen.resize(width, std::vector<int> (height, 0));
+
+  // think this should do it
+  seen.resize(width);
+  for (unsigned i = 0; i < seen.size(); i++) {
+    seen[i].resize(height , 0);
+  }
+
 }
 
 /**
@@ -30,14 +51,14 @@ DFS::DFS(const PNG & png, const Point & start, double tolerance) {
  */
 ImageTraversal::Iterator DFS::begin() {
   /** @todo [Part 1] */
-  return ImageTraversal::Iterator();
+  return ImageTraversal::Iterator(this, startPt, &png_, tolerance_);
 }
 
 /**
  * Returns an iterator for the traversal one past the end of the traversal.
  */
 ImageTraversal::Iterator DFS::end() {
-  /** @todo [Part 1] */
+  /** @todo [Part 1] */ // think this might stay the same
   return ImageTraversal::Iterator();
 }
 
@@ -46,6 +67,8 @@ ImageTraversal::Iterator DFS::end() {
  */
 void DFS::add(const Point & point) {
   /** @todo [Part 1] */
+  toVisit.push(point);
+  // not sure I have to do anything else
 }
 
 /**
@@ -53,7 +76,9 @@ void DFS::add(const Point & point) {
  */
 Point DFS::pop() {
   /** @todo [Part 1] */
-  return Point(0, 0);
+  Point tmp = toVisit.top();
+  toVisit.pop();
+  return tmp;
 }
 
 /**
@@ -61,7 +86,7 @@ Point DFS::pop() {
  */
 Point DFS::peek() const {
   /** @todo [Part 1] */
-  return Point(0, 0);
+  return toVisit.top();
 }
 
 /**
@@ -69,5 +94,22 @@ Point DFS::peek() const {
  */
 bool DFS::empty() const {
   /** @todo [Part 1] */
-  return true;
+  if (toVisit.empty()) {
+    return true;
+  } else {
+    return false;
+  }
 }
+
+bool DFS::visited(int x, int y) const {
+  if (seen[x][y] == 1) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void DFS::setVisited(int x, int y) {
+  seen[x][y] = 1;
+}
+

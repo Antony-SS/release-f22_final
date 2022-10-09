@@ -22,8 +22,29 @@ using namespace cs225;
  * @param tolerance If the current point is too different (difference larger than tolerance) with the start point,
  * it will not be included in this BFS
  */
-BFS::BFS(const PNG & png, const Point & start, double tolerance) {  
+BFS::BFS(const PNG & png, const Point & start, double tolerance): png_(png) {  
   /** @todo [Part 1] */
+
+  tolerance_ = tolerance;
+  startPt = start;
+  toVisit.push(startPt);
+
+  // leave current point uninitialized?
+
+  // I think a map actually may be more effective but Im not sure if we are allowed to use
+  // going to use vector over array b/c I don't have to deal with memory
+  int height = png.height();
+  int width = png.width();
+
+  // resize seen vector into size of image and intialize all members to 0
+  // CHECK THIS IF GETTING WEIRD SHIT
+  // seen.resize(width, std::vector<int> (height, 0));
+
+  // think this should do it
+  seen.resize(width);
+  for (unsigned i = 0; i < seen.size(); i++) {
+    seen[i].resize(height , 0);
+  }
 }
 
 /**
@@ -31,7 +52,7 @@ BFS::BFS(const PNG & png, const Point & start, double tolerance) {
  */
 ImageTraversal::Iterator BFS::begin() {
   /** @todo [Part 1] */
-  return ImageTraversal::Iterator();
+  return ImageTraversal::Iterator(this, startPt, &png_, tolerance_);
 }
 
 /**
@@ -47,6 +68,7 @@ ImageTraversal::Iterator BFS::end() {
  */
 void BFS::add(const Point & point) {
   /** @todo [Part 1] */
+  toVisit.push(point);
 }
 
 /**
@@ -54,7 +76,9 @@ void BFS::add(const Point & point) {
  */
 Point BFS::pop() {
   /** @todo [Part 1] */
-  return Point(0, 0);
+  Point tmp = toVisit.front();
+  toVisit.pop();
+  return tmp;
 }
 
 /**
@@ -62,13 +86,24 @@ Point BFS::pop() {
  */
 Point BFS::peek() const {
   /** @todo [Part 1] */
-  return Point(0, 0);
+  return toVisit.front();
 }
 
 /**
  * Returns true if the traversal is empty.
  */
 bool BFS::empty() const {
-  /** @todo [Part 1] */
-  return true;
+  return toVisit.empty();
+}
+
+bool BFS::visited(int x, int y) const {
+  if (seen.at(x).at(y)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void BFS::setVisited(int x, int y) {
+  seen.at(x).at(y) = 1;
 }

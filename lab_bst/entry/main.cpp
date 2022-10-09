@@ -197,7 +197,36 @@ void exampleManyRemovals()
 
 int main(int argc, char** argv)
 {
-    exampleAllBuild();
+    // exampleAllBuild();
+
+    BST<int, int> tree;
+    tree.insert(5, 0);
+    tree.insert(4, 1);
+    tree.insert(9, 2);
+    tree.insert(12, 3);
+    tree.insert(7, 4);
+    tree.insert(8, 5);
+    tree.insert(11, 6);
+    tree.insert(2, 7);
+
+    tree.print();
+
+    tree.remove(9);
+
+    tree.print();
+
+
+    tree.remove(5);
+
+    tree.print();
+
+    std::vector<int> nodes;
+    nodes.push_back(4);
+    nodes.push_back(12);
+    nodes.push_back(7);
+    nodes.push_back(8);
+    nodes.push_back(11);
+    nodes.push_back(2);
 
     return 0;
 }

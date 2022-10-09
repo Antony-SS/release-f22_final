@@ -13,6 +13,8 @@
 #include "../Point.h"
 
 #include "ImageTraversal.h"
+#include <stack>
+
 
 using namespace cs225;
 
@@ -32,7 +34,16 @@ public:
   Point peek() const;
   bool empty() const;
 
+  bool visited(int x, int y) const;
+  void setVisited(int x, int y);
+
 private:
 	/** @todo [Part 1] */
 	/** add private members here*/
+  std::stack<Point> toVisit;
+  double tolerance_;
+  const PNG& png_;
+  Point startPt;
+  std::vector<std::vector<int>> seen;
+
 };
