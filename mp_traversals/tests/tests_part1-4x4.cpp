@@ -90,6 +90,7 @@ TEST_CASE("DFS visits all points within a tolerance", "[weight=1][part=1]") {
     std::cout << count << std::endl;
     count++;
   }
+  
   REQUIRE( count == 4 );
 }
 

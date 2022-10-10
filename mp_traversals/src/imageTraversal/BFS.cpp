@@ -45,6 +45,8 @@ BFS::BFS(const PNG & png, const Point & start, double tolerance): png_(png) {
   for (unsigned i = 0; i < seen.size(); i++) {
     seen[i].resize(height , 0);
   }
+
+  
 }
 
 /**
