@@ -68,7 +68,7 @@ ImageTraversal::Iterator & ImageTraversal::Iterator::operator++() {
   const HSLAPixel & startpix = png_->getPixel(startPt_.x, startPt_.y);
   // pixels around the pt, in the order they should be added
 
-  std::cout << "x,y is: " <<  currentPt_.x << " , " << currentPt_.y << std::endl;
+  // std::cout << "x,y is: " <<  currentPt_.x << " , " << currentPt_.y << std::endl;
 
   Point right_ = Point(popped.x + 1, popped.y);
   Point below_ = Point(popped.x, popped.y + 1);
@@ -81,6 +81,10 @@ ImageTraversal::Iterator & ImageTraversal::Iterator::operator++() {
   // if we approach a point from 2 directions it will be added to the stack/queue twice b/c it will be unseen, but will already be on the queue or stack.
 
   // so before we do any of this shit to add points/
+
+  while (!traversal_->empty() && traversal_->visited(traversal_->peek().x, traversal_->peek().y)) {
+    currentPt_ = traversal_->pop();
+  }
 
   if (right_.x < png_->width()) {
     const HSLAPixel& currPix = png_->getPixel(right_.x, right_.y);
@@ -120,7 +124,7 @@ ImageTraversal::Iterator & ImageTraversal::Iterator::operator++() {
     if (top_.y < png_->height()) { // since ints wrap around we are going to do a weird check here
     const HSLAPixel& currPix = png_->getPixel(top_.x, top_.y);
     double diff  = calculateDelta(startpix, currPix);
-    if (diff < tolerance_ && !(traversal_->visited(top_.x, top_.y))) { // check tolerance and making sure it is not seen
+    if (diff < tolerance_ && !(traversal_->visited(top_.x, top_.y))) { // check tolerance and making sure it is not seen // think about making this less than or equal to
       traversal_->add(top_);
     }
   }
@@ -128,10 +132,6 @@ ImageTraversal::Iterator & ImageTraversal::Iterator::operator++() {
   // now all points are added if in bounds, below tolerance, and not seen
 
   // if traversal is empty at this point we are done . . . 
-
-  while (!traversal_->empty() && traversal_->visited(traversal_->peek().x, traversal_->peek().y)) {
-    currentPt_ = traversal_->pop();
-  }
 
   if (traversal_->empty()) {
     return *this;
@@ -161,16 +161,22 @@ Point ImageTraversal::Iterator::operator*() {
 bool ImageTraversal::Iterator::operator!=(const ImageTraversal::Iterator &other) {
   /** @todo [Part 1] */
 
-  bool thisEmpty = false;
-  bool otherEmpty = false;
+  bool thisisEmpty = false;
+  bool otherisEmpty = false;
 
-  if (traversal_ == nullptr) thisEmpty = true;
-  if (other.traversal_ == nullptr) otherEmpty = true;
+  if (other.traversal_ == nullptr) otherisEmpty = true;
+  if (traversal_ == nullptr) thisisEmpty = true;
 
-  if (!thisEmpty) thisEmpty = traversal_->empty();
-  if (!otherEmpty) otherEmpty = other.traversal_->empty();
+  if (thisisEmpty && otherisEmpty) {
+    return false;
+  }
 
-  if (thisEmpty && otherEmpty) return false;
+  if (!otherisEmpty) otherisEmpty = other.traversal_->empty();
+  if (!thisisEmpty) thisisEmpty = traversal_->empty();
+
+  if (thisisEmpty && otherisEmpty) {
+    return false;
+  }
 
   return true;
 }

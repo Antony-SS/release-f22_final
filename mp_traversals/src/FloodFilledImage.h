@@ -30,5 +30,9 @@ public:
 private:
 	/** @todo [Part 2] */
 	/** add private members here*/
+  PNG floodFilled;
+  ColorPicker* colorPicker_;
+  // HSLAPixel chosenColor;
+  std::vector<ImageTraversal*> traversals_;
 
 };
