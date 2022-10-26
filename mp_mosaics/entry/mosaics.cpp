@@ -23,11 +23,17 @@ namespace opts
 }
 
 int main(int argc, const char** argv) {
+
     string inFile = "";
     string tileDir = "../uiuc-ig/";
     string numTilesStr = "100";
     string pixelsPerTileStr = "50";
     string outFile = "mosaic.png";
+
+    // ./mosaics ./backgroundimage.png ./CompressedAfterSchool 
+
+    // make sure that the tile images are compressed to small or 100px max format
+    
 
     OptionsParser optsparse;
     optsparse.addArg(inFile);

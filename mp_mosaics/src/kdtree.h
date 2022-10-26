@@ -258,9 +258,23 @@ class KDTree
     void printTree(KDTreeNode * subroot, std::vector<std::string>& output,
                    int left, int top, int width, int currd) const;
 
+
+    KDTreeNode* createHelper(int left, int right, int dim, vector<Point<Dim>> &pts);
+
+    Point<Dim> quickSelect(int left, int right, int dim, vector<Point<Dim>>& pts, int pivot);
+
+    int partition(int left, int right, int dimension, vector<Point<Dim>>& list, int pivotIndex);
+
+    KDTreeNode* copy(KDTreeNode *other);
+
+    void clear(KDTreeNode*& root);
+
+    Point<Dim> findNearestNeighborHelper(typename KDTree<Dim>::KDTreeNode* subroot, const Point<Dim>& query, int dimension) const;
     /**
      * @todo Add your helper functions here.
      */
+
+
 };
 
 #include "kdtree.hpp"
