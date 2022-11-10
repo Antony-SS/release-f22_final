@@ -15,8 +15,9 @@ class DisjointSets {
 
     void setunion (int a, int b);
 
-    int size (int elem);	
-		
+    int size (int elem);
+
+    void clear();	
 
     private:
     std::vector<int> elements;

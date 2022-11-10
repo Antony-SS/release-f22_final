@@ -43,3 +43,10 @@ void DisjointSets::setunion (int a, int b) {
 int DisjointSets::size (int elem) {
     return (abs(elements[find(elem)]));
 }
+
+void DisjointSets::clear() {
+    while (elements.size() != 0) {
+        elements.pop_back();
+    }
+    return;
+}

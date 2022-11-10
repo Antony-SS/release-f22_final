@@ -3,15 +3,16 @@
 
 #pragma once
 #include "dsets.h"
-#include "./lib/cs225/PNG.h"
+#include "cs225/PNG.h"
+#include <vector>
+#include <queue>
+#include <iostream>
+#include <map>
 
-using namespace cs225;
-
+using cs225::PNG;
 
 class SquareMaze {
     public:
-
-    void makeMaze (int width, int height);
 
     bool canTravel (int x, int y, int dir) const;
 
@@ -19,21 +20,26 @@ class SquareMaze {
 
     PNG* drawMazeWithSolution ();
 
-    void SquareMaze::makeMaze (int width, int height);		
+    void makeMaze (int width, int height);		
 
-    void SquareMaze::setWall (int x, int y, int dir, bool exists);	
+    void setWall (int x, int y, int dir, bool exists);	
 
-    vector <int> SquareMaze::solveMaze ();
+    std::vector<int> solveMaze ();
 
+    int conversion(int x, int y) const;
 
-
-
-
+    int directionconverter(int dir, int x, int y) const;
 
 
     private:
-    DisjointSets maze;
-    int height;
-    int width;
 
+    // Not sure if I am even going to need the set . . . . Could use easily for cycle detection . . .  . 
+    DisjointSets maze;
+
+    int height_;
+    int width_;
+
+    // going to use 2 vectors to represent my maze, will hold all the information about where walls stand . . . 
+    std::vector<bool> base;
+    std::vector<bool> rside;
 };
