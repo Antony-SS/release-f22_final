@@ -33,6 +33,7 @@ int main()
     s.setunion(50, 3);
 
     cout << s.find(50) << endl;
+    
     cout << "Disjoint Sets test complete" << endl;
 
     return 0;

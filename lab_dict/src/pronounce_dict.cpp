@@ -75,5 +75,28 @@ PronounceDict::PronounceDict(const map<string, vector<string>>& pronun_dict)
 bool PronounceDict::homophones(const string& word1, const string& word2) const
 {
     /* Your code goes here! */
-    return true;
+    string w1 = word2;
+
+    string w2 = word1;
+
+
+    // first we transform into uppercase so that we can compare
+    std::transform(w2.begin(), w2.end(), w2.begin(), ::toupper); 
+
+    std::transform(w1.begin(), w1.end(), w1.begin(), ::toupper);
+
+    if(dict.count(w1) == 0 || dict.count(w2) == 0){
+
+        return false;
+
+    }
+
+    if(dict.at(w1) != dict.at(w2)) { // if number of homophomes are not the same
+
+        return false;
+        
+    } else {
+        return true;
+    }
+
 }

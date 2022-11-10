@@ -46,14 +46,27 @@ void CommonWords::init_file_word_maps(const vector<string>& filenames)
     for (size_t i = 0; i < filenames.size(); i++) {
         // get the corresponding vector of words that represents the current
         // file
+
         vector<string> words = file_to_vector(filenames[i]);
         /* Your code goes here! */
+        std::map<string, unsigned int> wordFrequency;
+        file_word_maps[i] = wordFrequency;
+        for (string& word : words) {
+            std::map<string, unsigned int>::iterator find = file_word_maps[i].find(word);
+            ++(file_word_maps[i][word]);
+        }
     }
 }
 
 void CommonWords::init_common()
 {
     /* Your code goes here! */
+    for (unsigned i = 0; i < file_word_maps.size(); ++i) {
+        for (auto it : file_word_maps[i]) {
+            ++common[it.first];
+        }
+    }
+
 }
 
 /**
@@ -65,6 +78,21 @@ vector<string> CommonWords::get_common_words(unsigned int n) const
 {
     vector<string> out;
     /* Your code goes here! */
+    for (auto& pair : common) {
+        if (pair.second == file_word_maps.size()) { // if this condition is true then the word appars in each document
+        // now we have to check to make sure that it apprears more than n in each document
+            bool forAll = true;
+            for (auto currentMap : file_word_maps) {
+                if (currentMap[pair.first] < n) {
+                    forAll = false;
+                    break;
+                } 
+            }
+            if (forAll == true) {
+                out.push_back(pair.first);
+            }
+        }
+    }
     return out;
 }
 
