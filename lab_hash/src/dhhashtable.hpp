@@ -81,8 +81,26 @@ void DHHashTable<K, V>::insert(K const& key, V const& value)
      *  forget to mark the cell for probing with should_probe!
      */
 
-    (void) key;   // prevent warnings... When you implement this function, remove this line.
-    (void) value; // prevent warnings... When you implement this function, remove this line.
+       ++elems;
+
+    if (shouldResize()) {resizeTable();}
+
+    size_t idx = hashes::hash(key, size);
+
+    if (table[idx] != nullptr) {
+        while (table[idx] != nullptr) {
+            int idx2 = hashes::secondary_hash(key, size);
+            idx = (idx + idx2) % size;
+        }
+    }
+
+    std::pair<K,V>* tmp = new std::pair<K,V> (key, value);
+
+    delete table[idx];
+    table[idx] = nullptr;
+
+    should_probe[idx] = true;
+    table[idx] = tmp;
 }
 
 template <class K, class V>
@@ -91,6 +109,16 @@ void DHHashTable<K, V>::remove(K const& key)
     /**
      * @todo Implement this function
      */
+    int idx = hashes::hash(key, size);
+    if (idx == -1) {
+        return;
+    }
+    
+    --elems;
+    delete table[idx];
+    table[idx] = nullptr;
+
+
 }
 
 template <class K, class V>
@@ -99,6 +127,20 @@ int DHHashTable<K, V>::findIndex(const K& key) const
     /**
      * @todo Implement this function
      */
+
+    size_t intialIndex = hashes::hash(key, size);
+
+    while (should_probe[intialIndex]) {
+        if (table[intialIndex] != nullptr && table[intialIndex]-> first == key) {
+            return intialIndex;
+        }
+            size_t idx2 = hashes::secondary_hash(key, size);
+            intialIndex = (intialIndex + idx2) % size;
+    } 
+
+    if (table[intialIndex] != nullptr) {
+        return intialIndex;
+    }
     return -1;
 }
 
