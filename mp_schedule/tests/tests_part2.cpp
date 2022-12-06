@@ -23,6 +23,7 @@ TEST_CASE("schedule() Approximate Public Test 1", "[weight=2]") {
     verifySchedule(roster, out, 4);
 }
 
+
 TEST_CASE("schedule() Public Test 1", "[weight=3]") {
     const V2D roster = {{"CS577", "JydY", "MnWd", "tnkL"},\
      {"CS591", "gpDS", "94Ol", "tnkL"}, \
